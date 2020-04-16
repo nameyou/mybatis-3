@@ -122,8 +122,10 @@ public class XPathParser {
     this.document = createDocument(new InputSource(reader));
   }
 
-  public XPathParser(InputStream inputStream, boolean validation, Properties variables, EntityResolver entityResolver) {
+  public XPathParser(InputStream inputStream, boolean validation, Properties variables, EntityResolver entityResolver) {//
+    // 普通构造函数
     commonConstructor(validation, variables, entityResolver);
+    // 创建文档对象
     this.document = createDocument(new InputSource(inputStream));
   }
 
@@ -230,6 +232,7 @@ public class XPathParser {
   private Document createDocument(InputSource inputSource) {
     // important: this must only be called AFTER common constructor
     try {
+      //DocumentBuilderFactory文档构造器工厂对象
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
       factory.setValidating(validation);
@@ -268,7 +271,9 @@ public class XPathParser {
     this.validation = validation;
     this.entityResolver = entityResolver;
     this.variables = variables;
+    // xpath工厂对象
     XPathFactory factory = XPathFactory.newInstance();
+    // 创建xpath对象
     this.xpath = factory.newXPath();
   }
 

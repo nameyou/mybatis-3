@@ -79,10 +79,19 @@ public class XMLConfigBuilder extends BaseBuilder {
   }
 
   public XMLConfigBuilder(InputStream inputStream, String environment, Properties props) {
+    // 创建XPathParser对象
     this(new XPathParser(inputStream, true, props, new XMLMapperEntityResolver()), environment, props);
   }
 
+  /**
+   *
+   * @param parser
+   * @param environment
+   * @param props
+   */
   private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
+    // 1.调用父类方法创建Configuration对象，并且初始化一些默认的配置
+    // 2. 并创建一些MapperRegistry、InterceptorChain、TypeHandlerRegistry等对象
     super(new Configuration());
     ErrorContext.instance().resource("SQL Mapper Configuration");
     this.configuration.setVariables(props);
@@ -91,46 +100,81 @@ public class XMLConfigBuilder extends BaseBuilder {
     this.parser = parser;
   }
 
+  /**
+   * 解析核心配置文件
+   * @return 返回Configuration对象
+   */
   public Configuration parse() {
+    // 判断是否被解析过，因为只能被解析一次
     if (parsed) {
       throw new BuilderException("Each XMLConfigBuilder can only be used once.");
     }
     parsed = true;
+    // 解析<configuration/>标签
     parseConfiguration(parser.evalNode("/configuration"));
     return configuration;
   }
 
+  /**
+   * 按照核心配置文件的顺序开始解析
+   * @param root
+   */
   private void parseConfiguration(XNode root) {
     try {
       // issue #117 read properties first
+      // 解析属性标签properties
       propertiesElement(root.evalNode("properties"));
+      // 解析 settings 配置，并将其转换为 Properties 对象
       Properties settings = settingsAsProperties(root.evalNode("settings"));
+      // 加载 vfs
       loadCustomVfs(settings);
+      // 解析 日志 配置
       loadCustomLogImpl(settings);
+      // 解析 typeAliases 配置
       typeAliasesElement(root.evalNode("typeAliases"));
+      // 解析 plugins插件 配置
       pluginElement(root.evalNode("plugins"));
+      // 解析 objectFactory 配置
       objectFactoryElement(root.evalNode("objectFactory"));
+      // 解析 objectWrapperFactory 配置
       objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
+      // 解析 reflectorFactory 配置
       reflectorFactoryElement(root.evalNode("reflectorFactory"));
+      // settings 中的信息设置到 Configuration 对象中
       settingsElement(settings);
       // read it after objectFactory and objectWrapperFactory issue #631
       environmentsElement(root.evalNode("environments"));
+      // 解析 databaseIdProvider 配置
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
+      // 解析 typeHandlers 配置
       typeHandlerElement(root.evalNode("typeHandlers"));
+      // 解析 mappers 配置
       mapperElement(root.evalNode("mappers"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
     }
   }
 
+  /**
+   * 解析<settings />
+   * 1. 解析 settings 子节点的内容，并将解析结果转成 Properties 对象
+   * 2. 为 Configuration 创建元信息对象
+   * 3. 通过 MetaClass 检测 Configuration 中是否存在某个属性的 setter 方法，不存在则抛异常
+   * 4. 若通过 MetaClass 的检测，则返回 Properties 对象，方法逻辑结束
+   * @param context
+   * @return
+   */
   private Properties settingsAsProperties(XNode context) {
     if (context == null) {
       return new Properties();
     }
+    // 获取 settings 子节点中的内容
     Properties props = context.getChildrenAsProperties();
     // Check that all settings are known to the configuration class
+    // 创建 Configuration 类的“元信息”对象
     MetaClass metaConfig = MetaClass.forClass(Configuration.class, localReflectorFactory);
     for (Object key : props.keySet()) {
+      // 检测 Configuration 中是否存在相关属性，不存在则抛出异常
       if (!metaConfig.hasSetter(String.valueOf(key))) {
         throw new BuilderException("The setting " + key + " is not known.  Make sure you spelled it correctly (case sensitive).");
       }
@@ -145,7 +189,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       for (String clazz : clazzes) {
         if (!clazz.isEmpty()) {
           @SuppressWarnings("unchecked")
-          Class<? extends VFS> vfsImpl = (Class<? extends VFS>)Resources.classForName(clazz);
+          Class<? extends VFS> vfsImpl = (Class<? extends VFS>) Resources.classForName(clazz);
           configuration.setVfsImpl(vfsImpl);
         }
       }
@@ -160,17 +204,24 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void typeAliasesElement(XNode parent) {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
+        // 解析 <package name="" />方式配置的别名别名
         if ("package".equals(child.getName())) {
           String typeAliasPackage = child.getStringAttribute("name");
           configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
         } else {
+          // 解析 <typeAlias type="" alias=""/>方式配置的别名别名
           String alias = child.getStringAttribute("alias");
           String type = child.getStringAttribute("type");
           try {
+            // 加载 type 对应的类型 反射机制，相当于Class.forName()
             Class<?> clazz = Resources.classForName(type);
+            // 判断 <typeAlias type="" alias=""/>标签中alias是否为空，为空则是没有配置别名
+            // type 属性是必须要配置的，而 alias 属性则不是必须的
             if (alias == null) {
+              // 没有配置属性alias别名处理的方法，则mybatis会
               typeAliasRegistry.registerAlias(clazz);
             } else {
+              // 配置了属性alias别名的方法
               typeAliasRegistry.registerAlias(alias, clazz);
             }
           } catch (ClassNotFoundException e) {
@@ -219,16 +270,26 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * 解析<properties>节点
+   * @param context
+   * @throws Exception
+   */
   private void propertiesElement(XNode context) throws Exception {
     if (context != null) {
+      // 解析 propertis 的子节点，并将这些节点内容转换为属性对象 Properties
       Properties defaults = context.getChildrenAsProperties();
+      // 获取 propertis 节点中的 resource 和 url 属性值
       String resource = context.getStringAttribute("resource");
       String url = context.getStringAttribute("url");
+      // 两者都不用空，则抛出异常
       if (resource != null && url != null) {
         throw new BuilderException("The properties element cannot specify both a URL and a resource based property file reference.  Please specify one or the other.");
       }
+      // 从文件系统中加载并解析属性文件
       if (resource != null) {
         defaults.putAll(Resources.getResourceAsProperties(resource));
+        // 通过 url 加载并解析属性文件
       } else if (url != null) {
         defaults.putAll(Resources.getUrlAsProperties(url));
       }
@@ -237,6 +298,7 @@ public class XMLConfigBuilder extends BaseBuilder {
         defaults.putAll(vars);
       }
       parser.setVariables(defaults);
+      // 将属性值设置到 configuration 中
       configuration.setVariables(defaults);
     }
   }
@@ -282,8 +344,8 @@ public class XMLConfigBuilder extends BaseBuilder {
           DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
           DataSource dataSource = dsFactory.getDataSource();
           Environment.Builder environmentBuilder = new Environment.Builder(id)
-              .transactionFactory(txFactory)
-              .dataSource(dataSource);
+            .transactionFactory(txFactory)
+            .dataSource(dataSource);
           configuration.setEnvironment(environmentBuilder.build());
         }
       }

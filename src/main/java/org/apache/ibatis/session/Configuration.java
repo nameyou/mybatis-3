@@ -100,6 +100,9 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
  */
 public class Configuration {
 
+  /**
+   * 初始化一些默认配置
+   */
   protected Environment environment;
 
   protected boolean safeRowBoundsEnabled;
@@ -179,6 +182,9 @@ public class Configuration {
   }
 
   public Configuration() {
+    /**
+     * 注册各种默认配置项的别名
+     */
     typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
     typeAliasRegistry.registerAlias("MANAGED", ManagedTransactionFactory.class);
 
