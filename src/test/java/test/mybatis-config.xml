@@ -25,17 +25,17 @@
      <property name="" value=""/>
    </properties>-->
 
-<!--    <plugins>-->
-<!--      <plugin interceptor="test.MyPlugins">-->
-<!--        <property name="name" value="阿三"/>-->
-<!--      </plugin>-->
+  <!--    <plugins>-->
+  <!--      <plugin interceptor="test.MyPlugins">-->
+  <!--        <property name="name" value="阿三"/>-->
+  <!--      </plugin>-->
   <!--PageHelper分页插件-->
-<!--  <plugins>-->
-<!--    <plugin interceptor="com.github.pagehelper.PageInterceptor">-->
-<!--      &lt;!&ndash; 配置方言 &ndash;&gt;-->
-<!--&lt;!&ndash;      <property name="dialect" value="mysql"/>&ndash;&gt;-->
-<!--    </plugin>-->
-<!--  </plugins>-->
+  <!--  <plugins>-->
+  <!--    <plugin interceptor="com.github.pagehelper.PageInterceptor">-->
+  <!--      &lt;!&ndash; 配置方言 &ndash;&gt;-->
+  <!--&lt;!&ndash;      <property name="dialect" value="mysql"/>&ndash;&gt;-->
+  <!--    </plugin>-->
+  <!--  </plugins>-->
 
   <environments default="development">
     <environment id="development">
@@ -61,6 +61,12 @@
   <!--  </typeHandlers>-->
 
   <mappers>
+    <!--
+      <package name=""/>  name:将包内的映射器接口实现全部注册为映射器
+      url: 使用完全限定资源定位符（URL）
+      resource:使用相对于类路径的资源引用
+      class: 使用映射器接口实现类的完全限定类名
+    -->
     <mapper resource="test/UserMappper.xml"/>
   </mappers>
 </configuration>

@@ -293,6 +293,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
       statementBuilder.parameterMap(statementParameterMap);
     }
 
+    // 构建MappedStatement对象，每一个MappedStatement对象都封装了一个<select>标签
     MappedStatement statement = statementBuilder.build();
     configuration.addMappedStatement(statement);
     return statement;

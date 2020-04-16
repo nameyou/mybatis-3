@@ -421,12 +421,18 @@ public class XMLConfigBuilder extends BaseBuilder {
   }
 
   private void mapperElement(XNode parent) throws Exception {
+    /**
+     * 将加载配置文件的方式分为两种，一种是package，一种mapper的方式
+     */
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
+        // 根据mapper节点配置的包扫描方式加载映射文件
         if ("package".equals(child.getName())) {
           String mapperPackage = child.getStringAttribute("name");
+          // 添加映射文件到configuration中
           configuration.addMappers(mapperPackage);
         } else {
+          // 根据mapper节点配置的resource方式加载映射文件
           String resource = child.getStringAttribute("resource");
           String url = child.getStringAttribute("url");
           String mapperClass = child.getStringAttribute("class");
@@ -434,6 +440,7 @@ public class XMLConfigBuilder extends BaseBuilder {
             ErrorContext.instance().resource(resource);
             InputStream inputStream = Resources.getResourceAsStream(resource);
             XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
+           // 解析映射文件
             mapperParser.parse();
           } else if (resource == null && url != null && mapperClass == null) {
             ErrorContext.instance().resource(url);

@@ -90,6 +90,7 @@ public class SqlSessionFactoryBuilder {
   }
 
   public SqlSessionFactory build(Configuration config) {
+    // 更具解析出来的configuration对象创建DefaultSqlSessionFactory对象
     return new DefaultSqlSessionFactory(config);
   }
 

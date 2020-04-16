@@ -92,8 +92,10 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   public void parse() {
     if (!configuration.isResourceLoaded(resource)) {
+      //接下映射文件的mapper标签
       configurationElement(parser.evalNode("/mapper"));
       configuration.addLoadedResource(resource);
+      // 绑定mapper的命名空间
       bindMapperForNamespace();
     }
 
@@ -108,16 +110,24 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void configurationElement(XNode context) {
     try {
+      // 获取命名空间
       String namespace = context.getStringAttribute("namespace");
       if (namespace == null || namespace.isEmpty()) {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
+      // 设置当前命名空间
       builderAssistant.setCurrentNamespace(namespace);
+      // 解析cache-标签
       cacheRefElement(context.evalNode("cache-ref"));
+      // 解析cache
       cacheElement(context.evalNode("cache"));
+      // 解析parameterMap
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
+      // 解析resultMap
       resultMapElements(context.evalNodes("/mapper/resultMap"));
+      // 解析sql
       sqlElement(context.evalNodes("/mapper/sql"));
+      // 解析select|insert|update|delete
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing Mapper XML. The XML location is '" + resource + "'. Cause: " + e, e);
@@ -128,13 +138,24 @@ public class XMLMapperBuilder extends BaseBuilder {
     if (configuration.getDatabaseId() != null) {
       buildStatementFromContext(list, configuration.getDatabaseId());
     }
+    // 解析<select><insert><update><delete>标签
     buildStatementFromContext(list, null);
   }
 
+  /**
+   * 解析<select><insert><update><delete>标签
+   * @param list
+   * @param requiredDatabaseId
+   */
   private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
+    /**
+     * 把每个标签封装成XNode放到集合中
+     */
     for (XNode context : list) {
+      // 创建XMLStatementBuilder对象，
       final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
       try {
+        //开始解析标签节点
         statementParser.parseStatementNode();
       } catch (IncompleteElementException e) {
         configuration.addIncompleteStatement(statementParser);
@@ -420,6 +441,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     if (namespace != null) {
       Class<?> boundType = null;
       try {
+        // 绑定的类型
         boundType = Resources.classForName(namespace);
       } catch (ClassNotFoundException e) {
         // ignore, bound type is not required
