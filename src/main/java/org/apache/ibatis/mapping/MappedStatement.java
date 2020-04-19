@@ -33,13 +33,16 @@ import org.apache.ibatis.session.Configuration;
  */
 public final class MappedStatement {
 
+  // 节点中的 属性（包括命名空间前缀）
   private String resource;
+  //
   private Configuration configuration;
   private String id;
   private Integer fetchSize;
   private Integer timeout;
   private StatementType statementType;
   private ResultSetType resultSetType;
+  // SqlSource 对象，对应一条 SQL 语句
   private SqlSource sqlSource;
   private Cache cache;
   private ParameterMap parameterMap;
@@ -47,6 +50,8 @@ public final class MappedStatement {
   private boolean flushCacheRequired;
   private boolean useCache;
   private boolean resultOrdered;
+  // SQL 的类型 ， INSERT 、 UPDATE 、 DELETE 、 SELECT
+  //或 FLUSH
   private SqlCommandType sqlCommandType;
   private KeyGenerator keyGenerator;
   private String[] keyProperties;
