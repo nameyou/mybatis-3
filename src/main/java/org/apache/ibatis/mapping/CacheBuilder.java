@@ -38,13 +38,18 @@ import org.apache.ibatis.reflection.SystemMetaObject;
  * @author Clinton Begin
  */
 public class CacheBuilder {
+  //Cache 对象的唯一标识， 一般情况下对应映射文件中的 配置 name space
   private final String id;
+  //  Cache 接 口的真正实现类，默认位是前面介绍的 PerpetualCache
   private Class<? extends Cache> implementation;
+  //装饰器集合，默认只包含 LruCache . class
   private final List<Class<? extends Cache>> decorators;
   private Integer size;
+  // 清理时间周期
   private Long clearInterval;
   private boolean readWrite;
   private Properties properties;
+  // 是否阻塞
   private boolean blocking;
 
   public CacheBuilder(String id) {
@@ -90,16 +95,27 @@ public class CacheBuilder {
   }
 
   public Cache build() {
+    //如采工mplementation 字段和 decorators 集合为空，则为其设立默认佳， implementation 默认
+    //位是 PerpetualCache . class, decorators 集合，默认只包含 LruCache.cla ss
     setDefaultImplementations();
+    //根据 implementation 指定的类型 ， 通过反射获取参数为 String 类型的构造方法，并通过该构造方
+    //法创建 Cache 对象
     Cache cache = newBaseCacheInstance(implementation, id);
+    // 根据＜ cache ＞节点 下 自己置的 ＜ property ＞信息，初始化 Cache 对象
     setCacheProperties(cache);
     // issue #352, do not apply decorators to custom caches
+    //检测 c ache 对象的 类型，如果是 PerpetualCache 类型，贝1］为其添加 decorat ors 集合中
+    //／／的装饰器 ； 如采是自定义类型的 Cache 接 口 实现，则不添加 decorators 集合中的装饰~
     if (PerpetualCache.class.equals(cache.getClass())) {
       for (Class<? extends Cache> decorator : decorators) {
+        //通过反射获取参数为 Cache 类型的构造方法，并通过该构造方法创建装饰器
         cache = newCacheDecoratorInstance(decorator, cache);
+        //  配置 cache 对象的属性
         setCacheProperties(cache);
       }
+      //添加 MyBatis 中提供的标准装饰器
       cache = setStandardDecorators(cache);
+      //／／如采不是 LoggingCache 的子类，则添加 LoggingCache 装饰器
     } else if (!LoggingCache.class.isAssignableFrom(cache.getClass())) {
       cache = new LoggingCache(cache);
     }
@@ -143,32 +159,36 @@ public class CacheBuilder {
     if (properties != null) {
       MetaObject metaCache = SystemMetaObject.forObject(cache);
       for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+        // 配置Cache 对应的属性名称
         String name = (String) entry.getKey();
+        // 配置Cache 对应的属性值
         String value = (String) entry.getValue();
+        // 检测 cache 是否有该属性对应的 setter 方法
         if (metaCache.hasSetter(name)) {
           Class<?> type = metaCache.getSetterType(name);
+          // 类型转换处理
           if (String.class == type) {
             metaCache.setValue(name, value);
           } else if (int.class == type
-              || Integer.class == type) {
+            || Integer.class == type) {
             metaCache.setValue(name, Integer.valueOf(value));
           } else if (long.class == type
-              || Long.class == type) {
+            || Long.class == type) {
             metaCache.setValue(name, Long.valueOf(value));
           } else if (short.class == type
-              || Short.class == type) {
+            || Short.class == type) {
             metaCache.setValue(name, Short.valueOf(value));
           } else if (byte.class == type
-              || Byte.class == type) {
+            || Byte.class == type) {
             metaCache.setValue(name, Byte.valueOf(value));
           } else if (float.class == type
-              || Float.class == type) {
+            || Float.class == type) {
             metaCache.setValue(name, Float.valueOf(value));
           } else if (boolean.class == type
-              || Boolean.class == type) {
+            || Boolean.class == type) {
             metaCache.setValue(name, Boolean.valueOf(value));
           } else if (double.class == type
-              || Double.class == type) {
+            || Double.class == type) {
             metaCache.setValue(name, Double.valueOf(value));
           } else {
             throw new CacheException("Unsupported property type for cache: '" + name + "' of type " + type);
@@ -176,6 +196,7 @@ public class CacheBuilder {
         }
       }
     }
+    // 如果 Cache 类继承了 InitializingObject 接口， 则调用其 initialize （） 方法继续 自 定义的初始化操作
     if (InitializingObject.class.isAssignableFrom(cache.getClass())) {
       try {
         ((InitializingObject) cache).initialize();

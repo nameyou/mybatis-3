@@ -692,7 +692,12 @@ public class Configuration {
     return keyGenerators.containsKey(id);
   }
 
+  /**
+   * 二级缓存对象放到configuration对象中
+   * @param cache
+   */
   public void addCache(Cache cache) {
+    // key是命名空间namespace，value是cache对象
     caches.put(cache.getId(), cache);
   }
 
