@@ -15,8 +15,14 @@
  */
 package test;
 
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 public interface UserMapper {
   public List selectUserList();
+
+  public User selectUserById(@Param("userId") Integer userId);
+
+  int updateUserByUserId(User user);
 }

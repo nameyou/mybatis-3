@@ -1,17 +1,17 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ * Copyright 2009-2019 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.ibatis.builder;
 
@@ -29,6 +29,11 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 
 /**
+ * 在经过 SqlNode.apply （） 方法的解析之后， SQL 语句会被传递到 SqlSourceBuilder 中 进行进
+ * 一步的解析。 SqlSourceBuilder 主要完成了两方面的操作， 一方面是解析 SQL 语句中的“＃｛｝”
+ * 占位符 中定义的属性，格式类似于＃｛ 仕c item_ 0, javaType= int, jdbcType=NUMERIC,
+ * typeHandler=MyTypeHandler ｝， 另一方面是将 SQL 语句中的呀。”占位符替换成“？ ” 占位符。
+ *
  * @author Clinton Begin
  */
 public class SqlSourceBuilder extends BaseBuilder {
@@ -39,10 +44,25 @@ public class SqlSourceBuilder extends BaseBuilder {
     super(configuration);
   }
 
+  /**
+   * 下面先简单了解 SqlSourceBuilder.parse()方 法的三个参数 ：
+   * 第一个参数是经过 SqlNode.apply()方法处理之后的 SQL 语句
+   * 第二个参数是用户传入的实参类型
+   * 第三个参数记录 了 形参与实参的对应关系，其实就是经过 SqlNode.apply()方法处理后的
+   * DynamicContext.bindings 集合。
+   *
+   * @param originalSql
+   * @param parameterType
+   * @param additionalParameters
+   * @return
+   */
   public SqlSource parse(String originalSql, Class<?> parameterType, Map<String, Object> additionalParameters) {
+    // 创建 ParameterMappingTokenHandler 对象，它是解析” ＃｛｝ ”占 位符 中的参数属性以及替换占位符的核心
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType, additionalParameters);
+    //使用 Gener icTokenParser 与 ParameterMappingTokenHandler 配合解析” ＃｛｝ ”占 位符
     GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
     String sql = parser.parse(originalSql);
+    // 创建 StaticSqlSource ，其中封装了占位符被替换成” ？ ”的 SQL 语句以及参数对应的 ParameterMapping集合
     return new StaticSqlSource(configuration, sql, handler.getParameterMappings());
   }
 

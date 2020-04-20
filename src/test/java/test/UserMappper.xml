@@ -18,8 +18,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="test.UserMapper">
-    <select id="selectUserList" resultType="test.User">
+
+<!--<resultMap id="" type="int">-->
+<!--    <result column="" property=""/>-->
+<!--  <discriminator javaType="">-->
+<!--    <case value=""></case>-->
+<!--  </discriminator>-->
+<!--  </resultMap>-->
+  <select id="selectUserList" resultType="test.User"  >
         select * from t_user
+    </select>
+
+  <!--配置二级缓存-->
+  <!--    <cache/>-->
+
+  <update id="updateUserByUserId" parameterType="test.User">
+        update t_user set name=#{name},age=#{age} where id=#{id}
+    </update>
+
+  <select id="selectUserById" parameterType="int" resultType="test.User">
+        select * from t_user where id=#{userId};
     </select>
 
 </mapper>
