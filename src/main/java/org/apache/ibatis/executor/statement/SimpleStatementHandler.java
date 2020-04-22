@@ -33,6 +33,8 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 /**
+ * 它底层使用 java. sql. Statement
+ * 对象来完成数据库的相关操作 ， 所以 SQL 语句中不能存在占位符
  * @author Clinton Begin
  */
 public class SimpleStatementHandler extends BaseStatementHandler {

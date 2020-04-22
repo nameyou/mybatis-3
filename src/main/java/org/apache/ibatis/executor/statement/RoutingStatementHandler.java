@@ -34,10 +34,12 @@ import org.apache.ibatis.session.RowBounds;
  */
 public class RoutingStatementHandler implements StatementHandler {
 
+  //  底层封装的真正的 StatementHandler 对象
   private final StatementHandler delegate;
 
   public RoutingStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
-
+// RoutingStatementHandler 的主要功能就是根据 MappedStateme 口 t 的配置，生成一个
+//／／ 对应的 StatementHandler 对象，并设置到 de legate 字段中
     switch (ms.getStatementType()) {
       case STATEMENT:
         delegate = new SimpleStatementHandler(executor, ms, parameter, rowBounds, resultHandler, boundSql);
