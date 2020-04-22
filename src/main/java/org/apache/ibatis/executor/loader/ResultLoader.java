@@ -35,22 +35,30 @@ import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.transaction.TransactionFactory;
 
 /**
+ * ResultLoader 主要负责保存一次延迟加载操作所需的全部信息，
  * @author Clinton Begin
  */
 public class ResultLoader {
 
+  //
   protected final Configuration configuration;
   protected final Executor executor;
   protected final MappedStatement mappedStatement;
   protected final Object parameterObject;
+  //  记录了延迟加载得到的对象类型
   protected final Class<?> targetType;
+  //  记录了延迟执行的 SQL 语句的实参
   protected final ObjectFactory objectFactory;
   protected final CacheKey cacheKey;
+  //  记录了延迟执行的 S QL 语句以及相关配置信息
   protected final BoundSql boundSql;
+  //  ResultExtractor 负责将延迟加载得到的结采对象转换成 target Type 类型的对象
   protected final ResultExtractor resultExtractor;
   protected final long creatorThreadId;
 
+  //  创建 ResultLoader 的线程 id
   protected boolean loaded;
+  //  ObjectFactory 工厂对象，通过反射创建延迟加载的 Java 对象
   protected Object resultObject;
 
   public ResultLoader(Configuration config, Executor executor, MappedStatement mappedStatement, Object parameterObject, Class<?> targetType, CacheKey cacheKey, BoundSql boundSql) {
@@ -66,18 +74,35 @@ public class ResultLoader {
     this.creatorThreadId = Thread.currentThread().getId();
   }
 
+  /**
+   * 核心是方法
+   * @return
+   * @throws SQLException
+   */
   public Object loadResult() throws SQLException {
+//    执行延迟加载，得到结果对象，并以 List 的形式返回
     List<Object> list = selectList();
+//    将 list 集合转换成 target Type 指定类型的对象
     resultObject = resultExtractor.extractObjectFromList(list, targetType);
     return resultObject;
   }
 
+  /**
+   * 执行延迟加载的方法
+   * @param <E>
+   * @return
+   * @throws SQLException
+   */
   private <E> List<E> selectList() throws SQLException {
+//记录执行延迟加载的 Executor 对象
     Executor localExecutor = executor;
     if (Thread.currentThread().getId() != this.creatorThreadId || localExecutor.isClosed()) {
+// 检测调用该方法的线程是否为创建 ResultLoader 对象的线程 、检测 localExecutor 是否
+//关闭，检测到异常情况时，会创建新的 Executor 对象来执行延迟加载操作
       localExecutor = newExecutor();
     }
     try {
+//      执行查询操作，得到延迟加载的 对象。
       return localExecutor.query(mappedStatement, parameterObject, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER, cacheKey, boundSql);
     } finally {
       if (localExecutor != executor) {

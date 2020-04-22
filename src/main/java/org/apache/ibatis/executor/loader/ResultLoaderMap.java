@@ -49,6 +49,7 @@ public class ResultLoaderMap {
 
   private final Map<String, LoadPair> loaderMap = new HashMap<>();
 
+//  负责加载指定名称的属性
   public void addLoader(String property, MetaObject metaResultObject, ResultLoader resultLoader) {
     String upperFirst = getUppercaseFirstProperty(property);
     if (!upperFirst.equalsIgnoreCase(property) && loaderMap.containsKey(upperFirst)) {
@@ -88,6 +89,7 @@ public class ResultLoaderMap {
     loaderMap.remove(property.toUpperCase(Locale.ENGLISH));
   }
 
+//  加载该对象中全部的延迟加载属性，
   public void loadAll() throws SQLException {
     final Set<String> methodNameSet = loaderMap.keySet();
     String[] methodNames = methodNameSet.toArray(new String[methodNameSet.size()]);
