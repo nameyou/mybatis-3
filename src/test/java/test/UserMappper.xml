@@ -19,13 +19,16 @@
 
 <mapper namespace="test.UserMapper">
 
-<!--<resultMap id="" type="int">-->
-<!--    <result column="" property=""/>-->
-<!--  <discriminator javaType="">-->
-<!--    <case value=""></case>-->
-<!--  </discriminator>-->
-<!--  </resultMap>-->
-  <select id="selectUserList" resultType="test.User"  >
+  <!--开启二级缓存-->
+  <cache/>
+
+  <!--<resultMap id="" type="int">-->
+  <!--    <result column="" property=""/>-->
+  <!--  <discriminator javaType="">-->
+  <!--    <case value=""></case>-->
+  <!--  </discriminator>-->
+  <!--  </resultMap>-->
+  <select id="selectUserList" resultType="test.User">
         select * from t_user
     </select>
 
@@ -33,8 +36,30 @@
   <!--    <cache/>-->
 
   <update id="updateUserByUserId" parameterType="test.User">
-        update t_user set name=#{name},age=#{age} where id=#{id}
+        update t_user set name=#{username},age=#{age} where id=#{id}
     </update>
+
+  <!--插入操作-->
+  <insert id="insertUser">
+    insert into t_user (name,age) values (#{user.username},#{user.age})
+  </insert>
+
+  <!--批量插入-->
+  <insert id="inserUserAll">
+    insert into t_user (name,age) values
+    <foreach collection="userList" item="user" separator=",">
+      (#{user.username},#{user.age})
+    </foreach>
+  </insert>
+
+<!--
+  发送这种sql，需要配置allowMultiQueries=true 允许多重查询
+  insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?)-->
+<!--  <insert id="inserUserAll">-->
+<!--    <foreach collection="userList" item="user" separator=";">-->
+<!--      insert into t_user (name,age) values (#{user.username},#{user.age})-->
+<!--    </foreach>-->
+<!--  </insert>-->
 
   <select id="selectUserById" parameterType="int" resultType="test.User">
         select * from t_user where id=#{userId};

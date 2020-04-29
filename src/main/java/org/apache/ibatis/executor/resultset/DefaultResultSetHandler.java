@@ -955,7 +955,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   }
 
   //
-  // HANDLE NESTED RESULT MAPS
+  // HANDLE NESTED RESULT MAPS处理嵌套结果图
   //
 
   private void handleRowValuesForNestedResultMap(ResultSetWrapper rsw, ResultMap resultMap, ResultHandler<?> resultHandler, RowBounds rowBounds, ResultMapping parentMapping) throws SQLException {

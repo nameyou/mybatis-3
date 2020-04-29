@@ -10,6 +10,15 @@ import java.io.InputStream;
 import java.util.List;
 
 public class CacheTest {
+
+
+  @Test
+  public void test2() throws Exception {
+    Integer i = 100;
+    System.out.println(i);
+
+  }
+
   /**
    * mybatis源码分析
    *
@@ -18,7 +27,7 @@ public class CacheTest {
   @Test
   public void test1() throws Exception {
     // 1.加载配置文件
-    InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
+    InputStream inputStream = Resources.getResourceAsStream("test/mybatis-config.xml");
     // 2. 创建SqlSessionFactory对象实际创建的是DefaultSqlSessionFactory对象
     SqlSessionFactory builder = new SqlSessionFactoryBuilder().build(inputStream);
     // 3. 创建SqlSession对象实际创建的是DefaultSqlSession对象
@@ -38,7 +47,7 @@ public class CacheTest {
    */
   @Test
   public void testCacheOne() throws Exception {
-    InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
+    InputStream inputStream = Resources.getResourceAsStream("test/mybatis-config.xml");
     SqlSessionFactory builder = new SqlSessionFactoryBuilder().build(inputStream);
     // 第一次获取sqlsession对象
     SqlSession sqlSession = builder.openSession();
@@ -58,7 +67,7 @@ public class CacheTest {
     UserMapper mapper1 = sqlSession.getMapper(UserMapper.class);
     User user1 = mapper1.selectUserById(1);
     System.out.println(user1);
-    //sqlSession.close();
+    sqlSession.close();
   }
 
 
@@ -69,7 +78,7 @@ public class CacheTest {
    */
   @Test
   public void testCache2() throws Exception {
-    InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
+    InputStream inputStream = Resources.getResourceAsStream("test/mybatis-config.xml");
     SqlSessionFactory build = new SqlSessionFactoryBuilder().build(inputStream);
     SqlSession sqlSession = build.openSession();
     UserMapper mapper = sqlSession.getMapper(UserMapper.class);
@@ -85,11 +94,11 @@ public class CacheTest {
     System.out.println(user2);
 
     System.out.println("===============更新数据===================");
-//        user.setName("嘿嘿");
-//        user.setAge(21);
-//        mapper2.updateUserByUserId(user);
-//        sqlSession2.commit();
-//        sqlSession2.close();
+    user.setUsername("嘿嘿");
+    user.setAge(24);
+    mapper2.updateUserByUserId(user);
+//    sqlSession2.commit();
+    sqlSession2.close();
     // 第三次查询
     System.out.println("===============第三次查询==================");
     SqlSession sqlSession3 = build.openSession();

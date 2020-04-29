@@ -56,10 +56,13 @@ public class Plugin implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
+//      获取当前方法所在类或接口中，可被当前 Interceptor 拦截的方法
       Set<Method> methods = signatureMap.get(method.getDeclaringClass());
+//      ／如采当前调用的方法需妥被拦截 ，则调用工nter ceptor . intercept （）方法进行拦截处理
       if (methods != null && methods.contains(method)) {
         return interceptor.intercept(new Invocation(target, method, args));
       }
+//      ／如采当前调用的方法不能被拦截 ， 9J1J 调用 target 对象的相应方法
       return method.invoke(target, args);
     } catch (Exception e) {
       throw ExceptionUtil.unwrapThrowable(e);
