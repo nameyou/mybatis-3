@@ -30,4 +30,6 @@ public interface UserMapper {
   void inserUserAll(@Param("userList") List<User> userList);
 
   void insertUser(@Param("user") User user);
+
+  void deleteUserAll(@Param("idList") List<User> idList);
 }

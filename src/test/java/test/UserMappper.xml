@@ -22,6 +22,14 @@
   <!--开启二级缓存-->
   <cache/>
 
+  <!-- 批量删除 -->
+  <delete id="deleteUserAll">
+    delete from t_user where id in
+    <foreach collection="idList" item="user" open="(" close=")" separator=",">
+      #{user.id}
+    </foreach>
+  </delete>
+
   <!--<resultMap id="" type="int">-->
   <!--    <result column="" property=""/>-->
   <!--  <discriminator javaType="">-->
@@ -52,14 +60,14 @@
     </foreach>
   </insert>
 
-<!--
-  发送这种sql，需要配置allowMultiQueries=true 允许多重查询
-  insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?)-->
-<!--  <insert id="inserUserAll">-->
-<!--    <foreach collection="userList" item="user" separator=";">-->
-<!--      insert into t_user (name,age) values (#{user.username},#{user.age})-->
-<!--    </foreach>-->
-<!--  </insert>-->
+  <!--
+    发送这种sql，需要配置allowMultiQueries=true 允许多重查询
+    insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?) ; insert into t_user (name,age) values (?,?)-->
+  <!--  <insert id="inserUserAll">-->
+  <!--    <foreach collection="userList" item="user" separator=";">-->
+  <!--      insert into t_user (name,age) values (#{user.username},#{user.age})-->
+  <!--    </foreach>-->
+  <!--  </insert>-->
 
   <select id="selectUserById" parameterType="int" resultType="test.User">
         select * from t_user where id=#{userId};

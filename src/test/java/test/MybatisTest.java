@@ -36,6 +36,25 @@ public class MybatisTest {
 
 
   /**
+   * p批量删除
+   */
+
+  @Test
+  public void testDeletBatch() throws Exception {
+    InputStream inputStream = Resources.getResourceAsStream("test/mybatis-config.xml");
+    SqlSessionFactory builder = new SqlSessionFactoryBuilder().build(inputStream);
+    SqlSession sqlSession = builder.openSession();
+    UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+    List<User> idList = new ArrayList<>();
+    for (User user : mapper.selectUserList()) {
+      idList.add(user);
+    }
+    mapper.deleteUserAll(idList);
+
+  }
+
+
+  /**
    * 测试插入
    */
   @Test
