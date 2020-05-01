@@ -21,6 +21,11 @@
   "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 
+
+  <settings>
+    <!--打印sql到控制台-->
+    <setting name="logImpl" value="STDOUT_LOGGING"/>
+  </settings>
   <!-- <properties resource="" url="">
      <property name="" value=""/>
    </properties>-->
@@ -42,7 +47,7 @@
       <transactionManager type="JDBC"/>
       <dataSource type="POOLED">
         <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/imooc?serverTimezone=UTC"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/mybatis_demo?serverTimezone=UTC"/>
         <property name="username" value="root"/>
         <property name="password" value="root"/>
       </dataSource>
