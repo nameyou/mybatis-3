@@ -53,7 +53,7 @@
   </insert>
 
   <!--批量插入-->
-  <insert id="inserUserAll">
+  <insert id="inserUserAll" >
     insert into t_user (name,age) values
     <foreach collection="userList" item="user" separator=",">
       (#{user.username},#{user.age})
@@ -71,6 +71,7 @@
 
   <select id="selectUserById" parameterType="int" resultType="test.User">
         select * from t_user where id=#{userId};
-    </select>
+ </select>
+
 
 </mapper>

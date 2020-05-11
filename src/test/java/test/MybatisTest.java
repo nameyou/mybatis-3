@@ -38,7 +38,6 @@ public class MybatisTest {
   /**
    * p批量删除
    */
-
   @Test
   public void testDeletBatch() throws Exception {
     InputStream inputStream = Resources.getResourceAsStream("test/mybatis-config.xml");
@@ -52,7 +51,6 @@ public class MybatisTest {
     mapper.deleteUserAll(idList);
 
   }
-
 
   /**
    * 测试插入
