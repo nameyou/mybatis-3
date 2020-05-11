@@ -61,6 +61,7 @@ public class MyPlugins implements Interceptor {
     return Plugin.wrap(target,this);
   }
 
+
   /**
    * 插件所需的参数
    * 获取配置文件的参数，插件初始化的时候，只加载一次
